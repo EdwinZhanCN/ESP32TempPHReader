@@ -1,18 +1,39 @@
 #include <Arduino.h>
+#include <OneWire.h>
+#include <DallasTemperature.h>
+#include <DFRobot_PH.h>
 
-// put function declarations here:
-int myFunction(int, int);
+
+// 定义连接 DS18B20 的 GPIO 引脚
+const int oneWireBus = 14; 
+
+// 设置 OneWire 实例
+OneWire oneWire(oneWireBus);
+
+// 传递 oneWire 引用给 Dallas Temperature 库
+DallasTemperature sensors(&oneWire);
 
 void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
+  // 初始化串口通信
+  Serial.begin(9600);
+
+  // 启动 Dallas Temperature 库
+  sensors.begin();
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-}
+  // 请求温度
+  sensors.requestTemperatures();
+  
 
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
+  // 获取温度（摄氏度）
+  float temperatureC = sensors.getTempCByIndex(0);
+
+  // 通过串口输出温度
+  Serial.print("Temperature: ");
+  Serial.print(temperatureC);
+  Serial.println(" °C");
+
+  // 延时1秒
+  delay(1000);
 }
