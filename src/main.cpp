@@ -1,39 +1,37 @@
 #include <Arduino.h>
-#include <OneWire.h>
-#include <DallasTemperature.h>
-#include <DFRobot_PH.h>
+#include <WiFi.h>
+#include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+#include "temperature_sensor.h"
+#include "ph_sensor.h"
+#include "wifi_connection.h"
 
+AsyncWebServer server(9128);
 
-// 定义连接 DS18B20 的 GPIO 引脚
-const int oneWireBus = 14; 
-
-// 设置 OneWire 实例
-OneWire oneWire(oneWireBus);
-
-// 传递 oneWire 引用给 Dallas Temperature 库
-DallasTemperature sensors(&oneWire);
+const char* ssid = "2L left";
+const char* password = "Zzh041126";
 
 void setup() {
-  // 初始化串口通信
-  Serial.begin(9600);
+    Serial.begin(9600);
 
-  // 启动 Dallas Temperature 库
-  sensors.begin();
+    initTemperatureSensor();
+    initPHSensor();
+    initWiFi(ssid, password, server);
+
+    server.on("/sensors", HTTP_GET, [](AsyncWebServerRequest *request){
+        float temperature = readTemperature();
+        float phValue = readPH();
+        String json = "{\"temperature\":" + String(temperature) + ", \"ph\":" + String(phValue) + "}";
+        request->send(200, "application/json", json);
+    });
 }
 
 void loop() {
-  // 请求温度
-  sensors.requestTemperatures();
-  
-
-  // 获取温度（摄氏度）
-  float temperatureC = sensors.getTempCByIndex(0);
-
-  // 通过串口输出温度
-  Serial.print("Temperature: ");
-  Serial.print(temperatureC);
-  Serial.println(" °C");
-
-  // 延时1秒
-  delay(1000);
+    // 空循环
+    Serial.print("Temperature: ");
+    Serial.print(readTemperature());
+    Serial.println(" °C");
+    Serial.print("PH: ");
+    Serial.println(readPH());
+    delay(1000);
 }
