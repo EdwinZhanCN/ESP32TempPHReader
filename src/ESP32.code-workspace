@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "../.."
+		},
+		{
+			"name": "ESP32TempPHReader",
+			"path": ".."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"ios": "cpp",
+			"*.tcc": "cpp"
+		}
+	}
+}
