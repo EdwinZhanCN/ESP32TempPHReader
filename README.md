@@ -2,3 +2,4 @@
 - Converting ADC Voltage into pH Value
 - Reading Temperature with DS18B20 Temperature Sensor
 - Subscribe the MQTT Service on a MQTT Server.
+- Publish the sensor data
